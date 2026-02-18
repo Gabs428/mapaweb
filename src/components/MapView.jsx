@@ -1,3 +1,4 @@
+// src/components/MapView.jsx
 import React, { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -18,10 +19,10 @@ export default function MapView({ lat, lon, info, aqiBadge }) {
   const mapInstance = useRef(null);
   const markerRef = useRef(null);
 
-  // 1) Inicializa el mapa UNA sola vez (sin lat/lon aquí)
+  // Inicializa el mapa una sola vez (sin lat/lon aquí)
   useEffect(() => {
     if (!mapInstance.current && mapRef.current) {
-      const map = L.map(mapRef.current); // sin setView aquí
+      const map = L.map(mapRef.current);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
         maxZoom: 19,
@@ -30,7 +31,7 @@ export default function MapView({ lat, lon, info, aqiBadge }) {
     }
   }, []);
 
-  // 2) Centra y actualiza marcador/popup cuando cambian props
+  // Re-centrar y actualizar marcador/popup al cambiar props
   useEffect(() => {
     if (!mapInstance.current) return;
 
