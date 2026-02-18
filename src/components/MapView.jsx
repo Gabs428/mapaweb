@@ -18,9 +18,10 @@ export default function MapView({ lat, lon, info, aqiBadge }) {
   const mapInstance = useRef(null);
   const markerRef = useRef(null);
 
+  // 1) Inicializa el mapa UNA sola vez (sin lat/lon aquí)
   useEffect(() => {
     if (!mapInstance.current && mapRef.current) {
-      const map = L.map(mapRef.current).setView([lat, lon], 13);
+      const map = L.map(mapRef.current); // sin setView aquí
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
         maxZoom: 19,
@@ -29,18 +30,26 @@ export default function MapView({ lat, lon, info, aqiBadge }) {
     }
   }, []);
 
+  // 2) Centra y actualiza marcador/popup cuando cambian props
   useEffect(() => {
     if (!mapInstance.current) return;
+
     mapInstance.current.setView([lat, lon], 15);
+
     if (markerRef.current) {
       mapInstance.current.removeLayer(markerRef.current);
     }
+
     const badgeHtml = aqiBadge ? `<br/>${aqiBadge}` : "";
+    const html = `
+      <strong>${info || ""}</strong><br/>
+      Lat: ${Number(lat).toFixed(6)}<br/>
+      Lon: ${Number(lon).toFixed(6)}${badgeHtml}
+    `;
+
     markerRef.current = L.marker([lat, lon])
       .addTo(mapInstance.current)
-      .bindPopup(
-        `<strong>${info || ""}</strong><br/>Lat: ${Number(lat).toFixed(6)}<br/>Lon: ${Number(lon).toFixed(6)}${badgeHtml}`
-      )
+      .bindPopup(html)
       .openPopup();
   }, [lat, lon, info, aqiBadge]);
 
